@@ -6,9 +6,12 @@ import numpy as np, os, sys
 from team_code import load_twelve_lead_model, load_six_lead_model, load_three_lead_model, load_two_lead_model
 from team_code import run_twelve_lead_model, run_six_lead_model, run_three_lead_model, run_two_lead_model
 from helper_code import *
+from dataset_27cls_60s import *
 
 # Test model.
 def test_model(model_directory, data_directory, output_directory):
+    batch_size = 1
+
     # Load model.
     print('Loading models...')
 
@@ -34,7 +37,7 @@ def test_model(model_directory, data_directory, output_directory):
     print('Running model...')
 
     for i in range(num_recordings):
-        print('    {}/{}...'.format(i+1, num_recordings))
+        print('    {}/{}...'.format(i + 1, num_recordings))
 
         # Load header and recording.
         header = load_header(header_files[i])
@@ -69,5 +72,9 @@ if __name__ == '__main__':
     model_directory = sys.argv[1]
     data_directory = sys.argv[2]
     output_directory = sys.argv[3]
+
+    # data_directory = DATA_ROOT_PATH + '/CinC2021/all_data_test'
+    # model_directory = DATA_ROOT_PATH + '/CinC2021_model'
+    # output_directory = DATA_ROOT_PATH + '/out'
 
     test_model(model_directory, data_directory, output_directory)

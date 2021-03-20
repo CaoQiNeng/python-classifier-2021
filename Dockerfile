@@ -1,14 +1,16 @@
-FROM python:3.8.6-slim
+FROM anibali/pytorch:cuda-10.1
+#FROM python:3.7.3-slim
 
-## The MAINTAINER instruction sets the author field of the generated images.
-MAINTAINER author@example.com
-
-## DO NOT EDIT the 3 lines.
+## The MAINTAINER instruction sets the Author field of the generated images
+MAINTAINER author@sample.com
+USER root
+## DO NOT EDIT THESE 3 lines
 RUN mkdir /physionet
 COPY ./ /physionet
 WORKDIR /physionet
 
-## Install your dependencies here using apt install, etc.
+## Install your dependencies here using apt-get etc.
 
-## Include the following line if you have a requirements.txt file.
-RUN pip install -r requirements.txt
+## Do not edit if you have a requirements.txt
+RUN pip install -i http://pypi.douban.com/simple/ --trusted-host=pypi.douban.com/simple -r requirements.txt
+
