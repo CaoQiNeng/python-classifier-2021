@@ -3,7 +3,7 @@ from scipy import signal
 from helper_code import *
 
 #--------------
-class_map = pd.read_csv('/physionet/evaluation-2021/dx_mapping_scored.csv')['SNOMED CT Code'].to_numpy()
+class_map = pd.read_csv('./dx_mapping_scored.csv')['SNOMED CT Code'].to_numpy()
 # class_map = pd.read_csv('/home1/cqn/data_root/CinC2021/evaluation-2021/dx_mapping_scored.csv')['SNOMED CT Code'].to_numpy()
 
 class CinCDataset(Dataset):
