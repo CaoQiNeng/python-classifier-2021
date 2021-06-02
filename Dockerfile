@@ -12,5 +12,5 @@ WORKDIR /physionet
 ## Install your dependencies here using apt-get etc.
 
 ## Do not edit if you have a requirements.txt
-RUN pip install -i http://pypi.douban.com/simple/ --trusted-host=pypi.douban.com/simple -r requirements.txt
+# RUN pip install -r requirements.txt
 

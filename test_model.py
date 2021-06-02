@@ -3,22 +3,24 @@
 # Do *not* edit this script.
 
 import numpy as np, os, sys
-from team_code import load_twelve_lead_model, load_six_lead_model, load_three_lead_model, load_two_lead_model
-from team_code import run_twelve_lead_model, run_six_lead_model, run_three_lead_model, run_two_lead_model
+from team_code import load_twelve_lead_model, load_six_lead_model, load_four_lead_model, load_three_lead_model, load_two_lead_model
+from team_code import run_twelve_lead_model, run_six_lead_model, run_four_lead_model, run_three_lead_model, run_two_lead_model
 from helper_code import *
 from dataset_27cls_60s import *
 
 # Test model.
-def test_model(model_directory, data_directory, output_directory):
+def run_model(model_directory, data_directory, output_directory):
     batch_size = 1
 
     # Load model.
     print('Loading models...')
 
-    twelve_lead_model = load_twelve_lead_model(model_directory)
-    six_lead_model = load_six_lead_model(model_directory)
-    three_lead_model = load_three_lead_model(model_directory)
-    two_lead_model = load_two_lead_model(model_directory)
+    model_path = './model'
+    twelve_lead_model = load_twelve_lead_model(model_path)
+    six_lead_model = load_six_lead_model(model_path)
+    four_lead_model = load_four_lead_model(model_path)
+    three_lead_model = load_three_lead_model(model_path)
+    two_lead_model = load_two_lead_model(model_path)
 
     # Find header and recording files.
     print('Finding header and recording files...')
@@ -44,11 +46,15 @@ def test_model(model_directory, data_directory, output_directory):
         recording = load_recording(recording_files[i])
         leads = get_leads(header)
 
-        # Apply model to recording.
+        # classes, labels, probabilities = run_six_lead_model(six_lead_model, header, recording)
+
+        # # Apply model to recording.
         if all(lead in leads for lead in twelve_leads):
             classes, labels, probabilities = run_twelve_lead_model(twelve_lead_model, header, recording)
         elif all(lead in leads for lead in six_leads):
             classes, labels, probabilities = run_six_lead_model(six_lead_model, header, recording)
+        elif all(lead in leads for lead in four_leads):
+            classes, labels, probabilities = run_four_lead_model(four_lead_model, header, recording)
         elif all(lead in leads for lead in three_leads):
             classes, labels, probabilities = run_three_lead_model(three_lead_model, header, recording)
         elif all(lead in leads for lead in two_leads):
@@ -57,24 +63,26 @@ def test_model(model_directory, data_directory, output_directory):
             raise NotImplementedError('No model is implemented for the lead set {}.'.format(', '.join(leads)))
 
         # Save model outputs.
+        recording_id = get_recording_id(header)
         head, tail = os.path.split(header_files[i])
         root, extension = os.path.splitext(tail)
         output_file = os.path.join(output_directory, root + '.csv')
-        save_outputs(output_file, classes, labels, probabilities)
+        # save_outputs(output_file, classes, labels, probabilities)
+        save_outputs(output_file, recording_id, classes, labels, probabilities)
 
     print('Done.')
 
 if __name__ == '__main__':
-    # Parse arguments.
-    if len(sys.argv) != 4:
-        raise Exception('Include the model, data, and output folders as arguments, e.g., python test_model.py model data output.')
+    # # Parse arguments.
+    # if len(sys.argv) != 4:
+    #     raise Exception('Include the model, data, and output folders as arguments, e.g., python test_model.py model data output.')
+    # model_directory = sys.argv[1]
+    # data_directory = sys.argv[2]
+    # output_directory = sys.argv[3]
 
-    model_directory = sys.argv[1]
-    data_directory = sys.argv[2]
-    output_directory = sys.argv[3]
 
-    # data_directory = DATA_ROOT_PATH + '/CinC2021/all_data_test'
-    # model_directory = DATA_ROOT_PATH + '/CinC2021_model'
-    # output_directory = DATA_ROOT_PATH + '/out'
+    model_directory = './model'
+    data_directory = './test_data'
+    output_directory = './test_outputs'
 
-    test_model(model_directory, data_directory, output_directory)
+    run_model(model_directory, data_directory, output_directory)

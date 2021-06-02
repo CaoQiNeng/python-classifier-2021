@@ -3,7 +3,7 @@ import os
 os.environ['QT_XKB_CONFIG_ROOT']='/usr/share/X11/xkb/'
 
 from lib.include import *
-# import matplotlib.cm
+import matplotlib.cm
 
 
 # draw -----------------------------------
@@ -112,23 +112,23 @@ def draw_screen_rect(image, pt1, pt2, color, alpha=0.5):
 #
 
 
-# def to_color(s, color=None):
-#
-#     if type(color) in [str] or color is None:
-#         #https://matplotlib.org/xkcd/examples/color/colormaps_reference.html
-#
-#         if color is None: color='cool'
-#         color = matplotlib.get_cmap(color)(s)
-#         b = int(255*color[2])
-#         g = int(255*color[1])
-#         r = int(255*color[0])
-#
-#     elif type(color) in [list,tuple]:
-#         b = int(s*color[0])
-#         g = int(s*color[1])
-#         r = int(s*color[2])
-#
-#     return (b,g,r)
+def to_color(s, color=None):
+
+    if type(color) in [str] or color is None:
+        #https://matplotlib.org/xkcd/examples/color/colormaps_reference.html
+
+        if color is None: color='cool'
+        color = matplotlib.get_cmap(color)(s)
+        b = int(255*color[2])
+        g = int(255*color[1])
+        r = int(255*color[0])
+
+    elif type(color) in [list,tuple]:
+        b = int(s*color[0])
+        g = int(s*color[1])
+        r = int(s*color[2])
+
+    return (b,g,r)
 
 
 

@@ -78,6 +78,3 @@ import time
 PI  = np.pi
 INF = np.inf
 EPS = 1e-12
-
-
-

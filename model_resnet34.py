@@ -1,4 +1,9 @@
 from common  import *
+import pretrainedmodels
+from model_code.model_AttenCNN import *
+# from model_AttenCNN import *
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "2,3"
 
 class BasicBlock(nn.Module):
     def __init__(self, in_planes, out_planes, kernel_size, stride=1, downsample=None,
@@ -41,7 +46,7 @@ class BasicBlock(nn.Module):
 
 class Net(nn.Module):
 
-    def __init__(self, in_planes, num_classes=1000, kernel_size=15, dropout_rate = 0.5):
+    def __init__(self, in_planes, num_classes=27, kernel_size=15, dropout_rate=0.5):
         super(Net, self).__init__()
         self.dilation = 1
         self.in_planes = in_planes
@@ -53,8 +58,15 @@ class Net(nn.Module):
         self.conv1 = nn.Conv1d(self.in_planes, self.out_planes, kernel_size=self.kernel_size, stride=1, padding=int(self.kernel_size/2),
                                bias=False)
         self.in_planes = self.out_planes
-        self.bn1 =  nn.BatchNorm1d(self.out_planes)
+        self.bn1 = nn.BatchNorm1d(self.out_planes)
         self.relu = nn.ReLU(inplace=True)
+
+        # # add attention--------------------------------------------------------------------------------------------l
+        # self.ca = mySENetBlock(self.in_planes)     #SENet
+        # self.ca = ChannelAttention(self.in_planes)   #scNet = ChannelAttention + SpatialAttention
+        # self.sa = SpatialAttention()
+        # # end attention -------------------------------------------------------------------------------------------l
+
 
         # first block
         self.conv2 = nn.Conv1d(self.out_planes, self.out_planes, kernel_size=self.kernel_size, stride=2, padding=int(self.kernel_size/2),
@@ -88,6 +100,13 @@ class Net(nn.Module):
 
         self.layers = nn.Sequential(*layers)
 
+        # # add attention -------------------------------------------------------------------------------------------l
+        # self.ca1 = mySENetBlock(self.in_planes)
+        # self.ca1 = ChannelAttention(self.in_planes)
+        # self.sa1 = SpatialAttention()
+        # # end attention -------------------------------------------------------------------------------------------l
+
+
         self.bn3 = nn.BatchNorm1d(self.out_planes)
         self.avgpool = nn.AdaptiveAvgPool1d(1)
         self.fc = nn.Linear(self.out_planes, num_classes)
@@ -97,6 +116,15 @@ class Net(nn.Module):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
+
+        # # add attention -------------------------------------------------------------------------------------------l
+        # x = self.ca(x)    # SENet
+        # x = self.ca(x) * x  #scNet
+        # x = self.sa(x) * x
+        # x = self.maxpool(x)
+
+        # # end attention -------------------------------------------------------------------------------------------l
+
 
         # first block
         identity = x
@@ -109,9 +137,17 @@ class Net(nn.Module):
 
         # res block x 15
         x = self.layers(x)
-
         x = self.bn3(x)
         x = self.relu(x)
+
+        # # add attention -------------------------------------------------------------------------------------------l
+        # x = self.ca1(x)   #SENet
+        # x = self.ca1(x) * x    #scNet
+        # x = self.sa1(x) * x
+
+        # # end attention -------------------------------------------------------------------------------------------l
+
+
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.fc(x)
@@ -119,10 +155,13 @@ class Net(nn.Module):
         return x
 
 def run_check_net():
-    net = Net(12, num_classes=9, dropout_rate = 0.5)
+    net = Net(12, num_classes=27, dropout_rate = 0.5)
 
     input = torch.randn(1, 12, 72000)
     output = net(input)
+
+    # structure of net
+    # summary(net, (12, 72000))
 
     print(output.shape)
 
@@ -145,6 +184,7 @@ def metric(truth, predict):
 # main #################################################################
 if __name__ == '__main__':
     print( '%s: calling main function ... ' % os.path.basename(__file__))
+
 
     # run_check_basenet()
     run_check_net()
