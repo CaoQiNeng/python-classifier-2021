@@ -5,7 +5,7 @@
 
 from helper_code import *
 # from helper_code_old import *
-import numpy as np, os, sys, joblib
+import numpy as np, sys #, joblib
 from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier
 from dataset_27cls_60s import *
@@ -56,7 +56,7 @@ def training_code(data_directory, model_directory):
     vaild_header_files = header_files[train_num:]
 
     # 12 lead
-    train_model(model_directory, train_header_files, vaild_header_files, twelve_leads, False)
+    train_model(model_directory, train_header_files, vaild_header_files, twelve_leads, True)
 
     # # 6 lead
     train_model(model_directory, train_header_files, vaild_header_files, six_leads, True)
@@ -144,10 +144,10 @@ def do_valid(net, valid_loader):
 ################################################################################
 
 # Save your trained models.
-def save_model(filename, classes, leads, imputer, classifier):
-    # Construct a data structure for the model and save it.
-    d = {'classes': classes, 'leads': leads, 'imputer': imputer, 'classifier': classifier}
-    joblib.dump(d, filename, protocol=0)
+# def save_model(filename, classes, leads, imputer, classifier):
+#     # Construct a data structure for the model and save it.
+#     d = {'classes': classes, 'leads': leads, 'imputer': imputer, 'classifier': classifier}
+#     joblib.dump(d, filename, protocol=0)
 
 # train model
 def train_model(model_directory, train_header_files, vaild_header_files, leads, pretrained):
@@ -155,7 +155,7 @@ def train_model(model_directory, train_header_files, vaild_header_files, leads, 
     if len(leads) == 12:
         model_filename = twelve_lead_model_filename
         in_planes = 12
-        num_iters = 100000 #100000  # 3000000    #3000
+        num_iters = 8000  # 100000 #100000  # 3000000    #3000
         print('num_iters = %d\n' % (num_iters))
         net = resnet50(in_planes).cuda()
 
@@ -520,10 +520,10 @@ def load_two_lead_model(model_directory):
 # Generic function for loading a model.
 # def load_model(filename):     #  original
 #     return joblib.load(filename)
-
-def load_model(filename, leads):
-
-    return joblib.load(filename)
+#
+# def load_model(filename, leads):
+#
+#     return joblib.load(filename)
 
 ################################################################################
 #
